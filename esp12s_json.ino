@@ -19,8 +19,6 @@ ESP8266WebServer server(80);
 // Temperature and humidity variables
 float temperature = 0.0;
 float humidity = 0.0;
-float getTemperature;
-float getHumidity;
 unsigned long previousReadDHT = 0;
 
 void setup() {
@@ -43,7 +41,6 @@ void setup() {
 
   // Define server routes
   server.on("/", handleRoot);
-  server.onNotFound(handleNotFound);
 
   // Start the server
   server.begin();
@@ -51,38 +48,48 @@ void setup() {
 }
 
 void loop() {
-
   // Handle client requests
   server.handleClient();
 
   // Read DHT sensor data every 2 seconds
   if (millis() - previousReadDHT > 2000) {
-    getTemperature = dht.readTemperature();
-    getHumidity = dht.readHumidity();
-
-    if (isnan(getTemperature) || isnan(getHumidity)) {
-      Serial.println("DHT read error.");
-    } else {
-      temperature = getTemperature;
-      humidity = getHumidity;
-    }
-
+    readDHTSensor();
     previousReadDHT = millis();
   }
 
   // Check WiFi connection and reconnect if needed
+  checkWiFi();
+}
+
+void readDHTSensor() {
+  float newTemperature = dht.readTemperature();
+  float newHumidity = dht.readHumidity();
+
+  if (isnan(newTemperature) || isnan(newHumidity)) {
+    Serial.println("DHT read error. Using last known values (0.0 if uninitialized).");
+  } else {
+    temperature = newTemperature;
+    humidity = newHumidity;
+  }
+}
+
+void checkWiFi() {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi lost, attempting to reconnect...");
+    WiFi.begin(ssid, password);
+    unsigned long reconnectStart = millis();
     while (WiFi.status() != WL_CONNECTED) {
-      delay(1000);
+      if (millis() - reconnectStart > 10000) {  // Timeout after 10 seconds
+        Serial.println("Failed to reconnect to WiFi.");
+        return;
+      }
+      delay(500);
       Serial.print(".");
-      WiFi.begin(ssid, password);
     }
     Serial.println();
     Serial.print("Reconnected! IP address: ");
     Serial.println(WiFi.localIP());
   }
-  
 }
 
 void handleRoot() {
@@ -97,23 +104,4 @@ void handleRoot() {
 
   Serial.println("JSON response sent:");
   Serial.println(jsonResponse);
-}
-
-void handleNotFound() {
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-
-  for (uint8_t i = 0; i < server.args(); i++) {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
-
-  server.send(404, "text/plain", message);
-  Serial.println("Client requested unknown resource:");
-  Serial.println(message);
 }
