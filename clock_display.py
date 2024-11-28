@@ -56,7 +56,7 @@ def get_astronomy_data():
     """Check if astronomy data needs to be updated and return current data."""
     global astronomy_data
     now = datetime.now()
-    # Update data only if it hasn't been updated in the last hour
+    # Update data only if it hasn't been updated in the last 12 hours
     if astronomy_data["last_updated"] is None or now - astronomy_data["last_updated"] > timedelta(hours=12):
         fetch_astronomy_data()
     return (
@@ -84,7 +84,7 @@ def get_forecast_data():
     """Check if forecast data needs to be updated and return current data."""
     global forecast_data
     now = datetime.now()
-    # Update data only if it hasn't been updated in the last hour
+    # Update data only if it hasn't been updated in the last 12 hours
     if forecast_data["last_updated"] is None or now - forecast_data["last_updated"] > timedelta(hours=12):
         fetch_forecast_data()
     return (
