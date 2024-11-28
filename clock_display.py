@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 # API URLs
 CURRENT_WEATHER_API_URL = "http://IP_OF_ARDUINO"
 ASTRONOMY_API_URL = "https://api.ipgeolocation.io/astronomy?apiKey=YOUR_KEY&lat=YOUR_LAT&long=YOUR_LONG"
-FORECAST_API_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/59210?apikey=YOUR_KEY&metric=true"
+FORECAST_API_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/YOUR_LOCATION_KEY?apikey=YOUR_KEY&metric=true"
 
 # Global variables to store astronomy and forecast data
 astronomy_data = {
