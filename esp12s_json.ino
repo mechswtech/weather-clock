@@ -93,7 +93,7 @@ void checkWiFi() {
 }
 
 void handleRoot() {
-  // Prepare the JSON response
+  // Prepare the JSON response, provide sensor data with 1 decimal place
   String jsonResponse = "{";
   jsonResponse += "\"temperature\":" + String(temperature, 1) + ",";
   jsonResponse += "\"humidity\":" + String(humidity, 1);
