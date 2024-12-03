@@ -150,7 +150,7 @@ def get_district_weather_data():
 
 def update_time():
     current_time = datetime.now()
-    day = current_time.strftime("%d")
+    day = current_time.day
     month_abbr = current_time.strftime("%b").upper()
     year = current_time.strftime("%Y")
     weekday = current_time.strftime("%A")
